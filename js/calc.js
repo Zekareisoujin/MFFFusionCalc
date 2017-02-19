@@ -1,5 +1,22 @@
 const max_slot = 5;
 
+CardOption = {
+    'gacha' : {
+        'rarity' : [3, 4, 5],
+        'fodder' : ['gacha', 'drop'],
+    },
+
+    'sicarius' : {
+        'rarity' : [3, 4],
+        'fodder' : ['sicarius'],
+    },
+
+    'drop' : {
+        'rarity' : [1, 2, 3, 4],
+        'fodder' : ['drop'],
+    }
+}
+
 FusionTable = {
     'attack': {
 

@@ -19,6 +19,88 @@
 </head>
 
 <body>
+    <div id='container'>
+        <div>
+            <form>
+                <label>Card type</label>
+                <label class='radio-inline'>
+                    <input type='radio' name='card-type-radio' id='card-type-attack' value='attack' checked> Attack
+                </label>
+                <label class='radio-inline'>
+                    <input type='radio' name='card-type-radio' id='card-type-support' value='support'> Support
+                </label>
+                <label>Special options</label>
+                <label class="checkbox-inline">
+                    <input type="checkbox" id="mobius-day"> Mobius Day
+                </label>
+                <label class="checkbox-inline">
+                    <input type="checkbox" id="mog-amulet"> Mog Amulet
+                </label>
+            </form>
+        </div>
+        <div id='target-card'>
+            <label>Card to level</label>
+            <form class='form-inline'>
+                <div class='form-group'>
+                    <select class='form-control' id='target-card-select'>
+                        <option value='gacha'>Shop card</option>
+                        <option value='drop'>Dropped card</option>
+                        <option value='sicarius'>Sicarius card</option>
+                    </select>
+                </div>
+                <div class='form-group'>
+                    <select class='form-control' id='target-rarity-select'>
+                        <option value=1>1 &#9733;</option>
+                        <option value=2>2 &#9733;</option>
+                        <option value=3>3 &#9733;</option>
+                        <option value=4>4 &#9733;</option>
+                        <option value=5>5 &#9733;</option>
+                    </select>
+                </div>
+                <div class='form-group'>
+                    <label for 'target-fusion-rate'>Minimum card fusion chance</label>
+                    <div class='input-group'>
+                        <input type='number' class='form-control' id='target-fusion-rate' min=1 max=100 step=1 value=100>
+                        <div class='input-group-addon'>%</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id='fodder-card'>
+            <label>Fodder</label>
+            <form class='form-inline'>
+                <div class='form-group'>
+                    <select class='form-control' id='fodder-card-select'>
+                        <option value='gacha'>Shop card</option>
+                        <option value='drop'>Dropped card</option>
+                        <option value='sicarius'>Sicarius card</option>
+                    </select>
+                </div>
+                <div class='form-group'>
+                    <select class='form-control' id='fodder-rarity-select'>
+                        <option value=1>1 &#9733;</option>
+                        <option value=2>2 &#9733;</option>
+                        <option value=3>3 &#9733;</option>
+                        <option value=4>4 &#9733;</option>
+                        <option value=5>5 &#9733;</option>
+                    </select>
+                </div>
+                <div class='form-group'>
+                    <label for 'fodder-fusion-rate'>Minimum fodder fusion chance</label>
+                    <div class='input-group'>
+                        <input type='number' class='form-control' id='fodder-fusion-rate' min=1 max=100 step=1 value=100>
+                        <div class='input-group-addon'>%</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div>
+            <button class='btn btn-primary' id='calculate'>Calculate</button>
+        </div>
+        <div id='result-here'>
+        </div>
+    </div>
+
     <script src="js/calc.js"></script>
     <script src="js/index.js"></script>
 </body>
