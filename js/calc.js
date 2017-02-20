@@ -166,13 +166,13 @@ var Calc = function(crossRateTable, fodderRateTable) {
         for (var i = start; i < cap; i++) {
             var rateLeft = rate - rateTable[idx][i];
             if (rateLeft <= 0) {
-                if (minBasket.cost < 0 || minBasket.cost > fodderCost[i])
+                if (minBasket.cost < 0 || minBasket.cost > fodderCost[i] || (minBasket.cost == fodderCost[i] && minBasket.basket.length > 1))
                     return { 'cost': fodderCost[i], 'basket': [i] };
                 else
                     return minBasket;
             } else if (slot - 1 > 0) {
                 var more = fillSlot(targetLevel, slot - 1, rateLeft, rateTable, notGreedy);
-                if ((more.cost > 0) && (minBasket.cost < 0 || minBasket.cost > more.cost + fodderCost[i])) {
+                if ((more.cost > 0) && (minBasket.cost < 0 || minBasket.cost > more.cost + fodderCost[i] || (minBasket.cost == more.cost + fodderCost[i] && minBasket.basket.length > more.basket.length + 1))) {
                     more.cost += fodderCost[i];
                     more.basket.push(i);
                     minBasket = more;
