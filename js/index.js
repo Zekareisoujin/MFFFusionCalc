@@ -33,18 +33,19 @@ var calculate = function () {
     }
 
     var targetRateTable = FusionTable[type][mainTable][md];
-    var calc = Calc(targetRateTable, FusionTable[type][fodderTable][md]);
+    var fodderRateTable = FusionTable[type][fodderTable][md];
+    var calc = Calc(targetRateTable, fodderRateTable);
     var ret = calc.compute(targetLevel, targetRate, fodderLevel, fodderRate, slotCount, bankSave);
     var cardCost = ret.cardCost;
     var fodderCost = ret.fodderCost;
 
-    var getBasketContent = function (basket) {
+    var getBasketContent = function (basket, tableRate) {
         var basketContent = {};
         for (var j = 0; j < basket.length; j++) {
-            var item = [j];
+            var item = basket[j];
             if (basketContent[item] == undefined) {
                 var ctn = {};
-                ctn.rate = targetRateTable[i][item];
+                ctn.rate = tableRate[i][item];
                 ctn.count = 1;
                 basketContent[item] = ctn;
             } else
@@ -67,16 +68,16 @@ var calculate = function () {
             total += cardCost[i].cost;
             bankTotal += cardCost[i].basket.length;
 
-            var basketContent = getBasketContent(cardCost[i].basket)
+            var basketContent = getBasketContent(cardCost[i].basket, targetRateTable)
             for (var key in basketContent) {
-                contentStr += basketContent[key].count + 'x AL' + (parseInt(key) + 1) + ' (' + basketContent[key].rate + '% each); ';
+                contentStr += basketContent[key].count + ' &times; AL' + (parseInt(key) + 1) + ' (' + basketContent[key].rate + '% each); ';
             }
 
-            costStr = cardCost[i].cost + 'x AL1 cards';
-            cummulativeCostStr = total + 'x AL1 cards';
+            costStr = cardCost[i].cost + ' &times; AL1 cards';
+            cummulativeCostStr = total + ' &times; AL1 cards';
             cummulativeBankCostStr = bankTotal + ' slots';
             if (fodderCard == 'gacha')
-                cummulativeCostStr += ' - ' + CardOption[fodderCard].price[fodderRarity] * total + ' tickets';
+                cummulativeCostStr += ' - ' + CardOption[type][fodderCard].price[fodderRarity] * total + ' tickets';
         } else {
             costStr = cummulativeCostStr = cummulativeBankCostStr = 'N/A';
             contentStr = 'Not achievable';
@@ -84,9 +85,9 @@ var calculate = function () {
 
         var tr = $('<tr>');
         tr.append($('<td>').html((i + 1) + ' &rarr; ' + (i + 2)));
-        tr.append($('<td>').text(contentStr));
-        tr.append($('<td>').text(costStr));
-        tr.append($('<td>').text(cummulativeCostStr));
+        tr.append($('<td>').html(contentStr));
+        tr.append($('<td>').html(costStr));
+        tr.append($('<td>').html(cummulativeCostStr));
         tr.append($('<td>').text(cummulativeBankCostStr));
 
         tbody.append(tr);
@@ -102,13 +103,13 @@ var calculate = function () {
         if (fodderCost[i].cost > 0) {
             total += fodderCost[i].cost;
 
-            var basketContent = getBasketContent(fodderCost[i].basket)
+            var basketContent = getBasketContent(fodderCost[i].basket, fodderRateTable)
             for (var key in basketContent) {
-                contentStr += basketContent[key].count + 'x AL' + (parseInt(key) + 1) + ' (' + basketContent[key].rate + '% each); ';
+                contentStr += basketContent[key].count + ' &times; AL' + (parseInt(key) + 1) + ' (' + basketContent[key].rate + '% each); ';
             }
 
-            costStr = cardCost[i].cost + 'x AL1 cards';
-            cummulativeCostStr = total + 'x AL1 cards';
+            costStr = cardCost[i].cost + ' &times; AL1 cards';
+            cummulativeCostStr = total + ' &times; AL1 cards';
         }else {
             costStr = cummulativeCostStr = 'N/A';
             contentStr = 'Not achievable';
@@ -116,9 +117,9 @@ var calculate = function () {
 
         var tr = $('<tr>');
         tr.append($('<td>').html((i + 1) + ' &rarr; ' + (i + 2)));
-        tr.append($('<td>').text(contentStr));
-        tr.append($('<td>').text(costStr));
-        tr.append($('<td>').text(cummulativeCostStr));
+        tr.append($('<td>').html(contentStr));
+        tr.append($('<td>').html(costStr));
+        tr.append($('<td>').html(cummulativeCostStr));
 
         tbody.append(tr);
     }
@@ -132,7 +133,8 @@ var filterSelect = function (elem, list) {
 
 var fodderRarityFilter = function () {
     var card = $('#fodder-card-select').val();
-    var rarity = CardOption[card].rarity;
+    var type = $('input[name=card-type-radio]:checked').val();
+    var rarity = CardOption[type][card].fodderRarity;
     var actualRarityAllowed = [];
 
     if (card == $('#target-card-select').val()) {
@@ -151,10 +153,11 @@ var fodderRarityFilter = function () {
     calculate();
 }
 
-$('#target-card-select').on('change', function () {
-    var card = $(this).val();
-    var fodderAllowed = CardOption[card].fodder;
-    var rarityAllowed = CardOption[card].rarity;
+var cardFilter = function () {
+    var card = $('#target-card-select').val();
+    var type = $('input[name=card-type-radio]:checked').val();
+    var fodderAllowed = CardOption[type][card].fodder;
+    var rarityAllowed = CardOption[type][card].rarity;
 
     $('#target-rarity-select option').each(function () {
         filterSelect($(this), rarityAllowed);
@@ -167,8 +170,23 @@ $('#target-card-select').on('change', function () {
     $('#fodder-card-select').val(fodderAllowed[0]);
 
     fodderRarityFilter();
+}
+
+$('input[name=card-type-radio]').on('change', function() {
+    var type = $('input[name=card-type-radio]:checked').val();
+    var cardAllowed = [];
+    for (key in CardOption[type])
+        cardAllowed.push(key);
+
+    $('#target-card-select option').each(function() {
+        filterSelect($(this), cardAllowed);
+    });
+    $('#target-card-select').val(cardAllowed[0]);
+
+    cardFilter();
 });
 
+$('#target-card-select').on('change', cardFilter);
 $('#target-rarity-select').on('change', fodderRarityFilter);
 $('#fodder-card-select').on('change', fodderRarityFilter);
 $('#fodder-rarity-select').on('change', calculate);
@@ -176,4 +194,5 @@ $('input:radio').on('change', calculate);
 $('input:checkbox').on('change', calculate);
 $('input[type=number]').on('change', calculate);
 $('#target-card-select').trigger('change');
+// $('input[value=support]').trigger('change')
 // $('#calculate').on('click', calculate);
