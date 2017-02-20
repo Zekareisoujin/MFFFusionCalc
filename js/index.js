@@ -8,15 +8,16 @@ var calculate = function () {
     var fodderRate = $('#fodder-fusion-rate').val();
     var md = $('#mobius-day').prop('checked') ? 'mobius' : 'standard';
     var mogAmulet = $('#mog-amulet').prop('checked');
+    var bankSave = $('#bank-save').prop('checked');
     var slotCount = 5;
     var mainTable, fodderTable, targetLevel, fodderLevel;
 
     if (type == 'attack') {
-        targetLevel = targetRarity*2;
-        fodderLevel = fodderRarity*2;
-    }else {
-        targetLevel = targetRarity + 1;
-        fodderLevel = fodderRarity + 1;
+        targetLevel = parseInt(targetRarity) * 2;
+        fodderLevel = parseInt(fodderRarity) * 2;
+    } else {
+        targetLevel = parseInt(targetRarity) + 1;
+        fodderLevel = parseInt(fodderRarity) + 1;
     }
 
     if (targetCard == fodderCard && targetRarity == fodderRarity)
@@ -25,47 +26,60 @@ var calculate = function () {
         mainTable = 'mix';
 
     fodderTable = fodderCard == 'gacha' ? 'gacha' : 'drop';
-    
+
     if (mogAmulet) {
         slotCount = 4;
         targetRate = Math.ceil(targetRate * 2 / 3);
     }
 
-    crossRateTable = FusionTable[type][mainTable][md];
-    fodderRateTable = FusionTable[type][fodderTable][md];
+    var targetRateTable = FusionTable[type][mainTable][md];
+    var calc = Calc(targetRateTable, FusionTable[type][fodderTable][md]);
+    var ret = calc.compute(targetLevel, targetRate, fodderLevel, fodderRate, slotCount, bankSave);
 
-    prepFodder(fodderLevel, fodderRate);
-    var ret = cardCost(targetLevel, 5, targetRate);
-    
     // Render table
     var total = 0;
+    var bankTotal = 0;
     var tbody = $('tbody').empty();
-    for (var i=0; i<ret.length; i++) {
-        total += ret[i].cost;
-
-        var basketContent = {};
-        for (var j=0; j<ret[i].basket.length; j++) {
-            var item = ret[i].basket[j];
-            if (basketContent[item] == undefined) {
-                var ctn = {};
-                ctn.rate = crossRateTable[i][item];
-                ctn.count = 1;
-                basketContent[item] = ctn;
-            }else
-                basketContent[item].count++;
-        }
-
+    for (var i = 0; i < ret.length; i++) {
         var contentStr = '';
-        for (var key in basketContent) {
-            contentStr += basketContent[key].count + 'x AL' + key + ' card(s) (' + basketContent[key].rate + '% each); ';
+        var costStr = '';
+        var cummulativeCostStr = '';
+        var cummulativeBankCostStr = '';
+
+        if (ret[i].cost > 0) {
+            total += ret[i].cost;
+            bankTotal += ret[i].basket.length;
+            var basketContent = {};
+            for (var j = 0; j < ret[i].basket.length; j++) {
+                var item = ret[i].basket[j];
+                if (basketContent[item] == undefined) {
+                    var ctn = {};
+                    ctn.rate = targetRateTable[i][item];
+                    ctn.count = 1;
+                    basketContent[item] = ctn;
+                } else
+                    basketContent[item].count++;
+            }
+
+            for (var key in basketContent) {
+                contentStr += basketContent[key].count + 'x AL' + (parseInt(key) + 1) + ' card(s) (' + basketContent[key].rate + '% each); ';
+            }
+
+            costStr = ret[i].cost + 'x AL1 cards';
+            cummulativeCostStr = total + 'x AL1 cards';
+            cummulativeBankCostStr = bankTotal + ' slots';
+        }else {
+            costStr = cummulativeCostStr = cummulativeBankCostStr = 'N/A';
+            contentStr = 'Not achievable';
         }
 
         var tr = $('<tr>');
-        tr.append($('<td>').html((i+1) +  ' &rarr; ' + (i+2)));
+        tr.append($('<td>').html((i + 1) + ' &rarr; ' + (i + 2)));
         tr.append($('<td>').text(contentStr));
-        tr.append($('<td>').text(ret[i].cost + 'x AL1 cards'));
-        tr.append($('<td>').text(total + 'x AL1 cards'));
-        
+        tr.append($('<td>').text(costStr));
+        tr.append($('<td>').text(cummulativeCostStr));
+        tr.append($('<td>').text(cummulativeBankCostStr));
+
         tbody.append(tr);
     }
 }
@@ -118,7 +132,7 @@ $('#target-card-select').on('change', function () {
 $('#target-rarity-select').on('change', fodderRarityFilter);
 $('#fodder-card-select').on('change', fodderRarityFilter);
 $('#fodder-rarity-select').on('change', calculate);
-$('#mobius-day').on('change', calculate);
-$('#mog-amulet').on('change', calculate);
+$('input:radio').on('change', calculate);
+$('input:checkbox').on('change', calculate);
 $('#target-card-select').trigger('change');
 // $('#calculate').on('click', calculate);

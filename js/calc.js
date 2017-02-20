@@ -150,52 +150,63 @@ FusionTable = {
     },
 }
 
-var crossRateTable = FusionTable['attack']['mix']['standard'];
-var fodderRateTable = FusionTable['attack']['drop']['standard'];
-var fodderCost;
+var Calc = function(crossRateTable, fodderRateTable) {
 
-// cbf with knapsack, gonna just go with greedy approach
-var fillSlot = function (targetLevel, slot, rate, rateTable) {
-    var idx = targetLevel - 2;
-    var cap = Math.min(rateTable[idx].length, fodderCost.length);
-    var minBasket = { 'cost': -1, 'basket': [] };
+    var fodderCost, cardCost;
 
-    for (var i = 0; i < cap; i++) {
-        var rateLeft = rate - rateTable[idx][i];
-        if (rateLeft <= 0) {
-            if (minBasket.cost < 0 || minBasket.cost > fodderCost[i])
-                return { 'cost': fodderCost[i], 'basket': [i] };
-            else
-                return minBasket;
-        } else if (slot - 1 > 0) {
-            var more = fillSlot(targetLevel, slot - 1, rateLeft, rateTable);
-            if ((more.cost > 0) && (minBasket.cost < 0 || minBasket.cost > more.cost + fodderCost[i])) {
-                more.cost += fodderCost[i];
-                more.basket.push(i);
-                minBasket = more;
+    // cbf with knapsack, gonna just go with greedy approach
+    var fillSlot = function (targetLevel, slot, rate, rateTable, notGreedy) {
+        var idx = targetLevel - 1;
+        // console.log(idx);
+        var cap = Math.min(rateTable[idx].length, fodderCost.length);
+        var minBasket = { 'cost': -1, 'basket': [] };
+
+        var start = (notGreedy ? cap-1 : 0);
+
+        for (var i = start; i < cap; i++) {
+            var rateLeft = rate - rateTable[idx][i];
+            if (rateLeft <= 0) {
+                if (minBasket.cost < 0 || minBasket.cost > fodderCost[i])
+                    return { 'cost': fodderCost[i], 'basket': [i] };
+                else
+                    return minBasket;
+            } else if (slot - 1 > 0) {
+                var more = fillSlot(targetLevel, slot - 1, rateLeft, rateTable, notGreedy);
+                if ((more.cost > 0) && (minBasket.cost < 0 || minBasket.cost > more.cost + fodderCost[i])) {
+                    more.cost += fodderCost[i];
+                    more.basket.push(i);
+                    minBasket = more;
+                }
+            }
+        }
+
+        return minBasket;
+    }
+
+    var prepFodder = function (maxLvl, minimumRate) {
+        fodderCost = [1];
+        for (var i = 1; i < maxLvl; i++) {
+            var set = fillSlot(i, 5, minimumRate, fodderRateTable);
+            fodderCost[i] = fodderCost[i - 1];
+            for (var j = 0; j < set.basket.length; j++) {
+                fodderCost[i] += fodderCost[set.basket[j]];
             }
         }
     }
 
-    return minBasket;
-}
-
-var prepFodder = function (maxLvl, minimumRate) {
-    fodderCost = [1];
-    for (var i = 1; i < maxLvl; i++) {
-        var set = fillSlot(i + 1, 5, minimumRate, fodderRateTable);
-        fodderCost[i] = fodderCost[i - 1];
-        for (var j = 0; j < set.basket.length; j++) {
-            fodderCost[i] += fodderCost[set.basket[j]];
+    var calculateCardCost = function (maxLvl, minimumRate, slotCount, notGreedy) {
+        cardCost = [];
+        for (var i = 1; i < maxLvl; i++) {
+            var data = fillSlot(i, slotCount, minimumRate, crossRateTable, notGreedy);
+            cardCost.push(data);
         }
     }
-}
 
-var cardCost = function (maxLvl, slotCount, minimumRate) {
-    var ret = [];
-    for (var i = 1; i < maxLvl; i++) {
-        var data = fillSlot(i + 1, slotCount, minimumRate, crossRateTable);
-        ret.push(data);
+    return {
+        compute : function(cardLevel, cardRate, fodderLevel, fodderRate, slotCount, notGreedy) {
+            prepFodder(fodderLevel, fodderRate);
+            calculateCardCost(cardLevel, cardRate, slotCount, notGreedy);
+            return cardCost;
+        }
     }
-    return ret;
 }
