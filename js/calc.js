@@ -154,6 +154,7 @@ var crossRateTable = FusionTable['attack']['mix']['standard'];
 var fodderRateTable = FusionTable['attack']['drop']['standard'];
 var fodderCost;
 
+// cbf with knapsack, gonna just go with greedy approach
 var fillSlot = function (targetLevel, slot, rate, rateTable) {
     var idx = targetLevel - 2;
     var cap = Math.min(rateTable[idx].length, fodderCost.length);
