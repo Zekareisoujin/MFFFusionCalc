@@ -35,42 +35,49 @@ var calculate = function () {
     var targetRateTable = FusionTable[type][mainTable][md];
     var calc = Calc(targetRateTable, FusionTable[type][fodderTable][md]);
     var ret = calc.compute(targetLevel, targetRate, fodderLevel, fodderRate, slotCount, bankSave);
+    var cardCost = ret.cardCost;
+    var fodderCost = ret.fodderCost;
+
+    var getBasketContent = function (basket) {
+        var basketContent = {};
+        for (var j = 0; j < basket.length; j++) {
+            var item = [j];
+            if (basketContent[item] == undefined) {
+                var ctn = {};
+                ctn.rate = targetRateTable[i][item];
+                ctn.count = 1;
+                basketContent[item] = ctn;
+            } else
+                basketContent[item].count++;
+        }
+        return basketContent;
+    }
 
     // Render table
     var total = 0;
     var bankTotal = 0;
-    var tbody = $('tbody').empty();
-    for (var i = 0; i < ret.length; i++) {
+    var tbody = $('#card-fusion-table tbody').empty();
+    for (var i = 0; i < cardCost.length; i++) {
         var contentStr = '';
         var costStr = '';
         var cummulativeCostStr = '';
         var cummulativeBankCostStr = '';
 
-        if (ret[i].cost > 0) {
-            total += ret[i].cost;
-            bankTotal += ret[i].basket.length;
-            var basketContent = {};
-            for (var j = 0; j < ret[i].basket.length; j++) {
-                var item = ret[i].basket[j];
-                if (basketContent[item] == undefined) {
-                    var ctn = {};
-                    ctn.rate = targetRateTable[i][item];
-                    ctn.count = 1;
-                    basketContent[item] = ctn;
-                } else
-                    basketContent[item].count++;
-            }
+        if (cardCost[i].cost > 0) {
+            total += cardCost[i].cost;
+            bankTotal += cardCost[i].basket.length;
 
+            var basketContent = getBasketContent(cardCost[i].basket)
             for (var key in basketContent) {
-                contentStr += basketContent[key].count + 'x AL' + (parseInt(key) + 1) + ' card(s) (' + basketContent[key].rate + '% each); ';
+                contentStr += basketContent[key].count + 'x AL' + (parseInt(key) + 1) + ' (' + basketContent[key].rate + '% each); ';
             }
 
-            costStr = ret[i].cost + 'x AL1 cards';
+            costStr = cardCost[i].cost + 'x AL1 cards';
             cummulativeCostStr = total + 'x AL1 cards';
             cummulativeBankCostStr = bankTotal + ' slots';
             if (fodderCard == 'gacha')
-                cummulativeCostStr += ' - ' + CardOption[fodderCard].price[fodderRarity]*total + ' tickets';
-        }else {
+                cummulativeCostStr += ' - ' + CardOption[fodderCard].price[fodderRarity] * total + ' tickets';
+        } else {
             costStr = cummulativeCostStr = cummulativeBankCostStr = 'N/A';
             contentStr = 'Not achievable';
         }
@@ -81,6 +88,37 @@ var calculate = function () {
         tr.append($('<td>').text(costStr));
         tr.append($('<td>').text(cummulativeCostStr));
         tr.append($('<td>').text(cummulativeBankCostStr));
+
+        tbody.append(tr);
+    }
+
+    total = 0;
+    tbody = $('#fodder-fusion-table tbody').empty();
+    for (var i = 0; i < fodderCost.length; i++) {
+        var contentStr = '';
+        var costStr = '';
+        var cummulativeCostStr = '';
+
+        if (fodderCost[i].cost > 0) {
+            total += fodderCost[i].cost;
+
+            var basketContent = getBasketContent(fodderCost[i].basket)
+            for (var key in basketContent) {
+                contentStr += basketContent[key].count + 'x AL' + (parseInt(key) + 1) + ' (' + basketContent[key].rate + '% each); ';
+            }
+
+            costStr = cardCost[i].cost + 'x AL1 cards';
+            cummulativeCostStr = total + 'x AL1 cards';
+        }else {
+            costStr = cummulativeCostStr = 'N/A';
+            contentStr = 'Not achievable';
+        }
+
+        var tr = $('<tr>');
+        tr.append($('<td>').html((i + 1) + ' &rarr; ' + (i + 2)));
+        tr.append($('<td>').text(contentStr));
+        tr.append($('<td>').text(costStr));
+        tr.append($('<td>').text(cummulativeCostStr));
 
         tbody.append(tr);
     }

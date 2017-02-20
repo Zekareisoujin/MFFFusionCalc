@@ -15,6 +15,7 @@
 <body>
     <div class='container'>
         <div>
+            <h3 class='col-md-12'>Settings</h3>
             <form>
                 <div class='col-md-4'>
                     <label>Card type</label><br>
@@ -98,8 +99,9 @@
         <!--<div>
             <button class='btn btn-primary' id='calculate'>Calculate</button>
         </div>-->
-        <div id='result-here'>
-            <table class='table table-striped'>
+        <div>
+            <h3 class='col-md-12'>Main card fusion table</h3>
+            <table id='card-fusion-table' class='table table-striped'>
                 <thead>
                     <th>Fusion</th>
                     <th>Method</th>
@@ -110,7 +112,21 @@
                 <tbody>
                 </tbody>
             </table>
+
+            <h3 class='col-md-12'>Fodder fusion table</h3>
+            <table id='fodder-fusion-table' class='table table-striped'>
+                <thead>
+                    <th>Fusion</th>
+                    <th>Method</th>
+                    <th>Cost</th>
+                    <th>Cummulative cost</th>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
+
+        <h6 class='text-right'>AL: Ability Level</h6>
     </div>
 
     <script src="js/calc.js?dev=' + Math.floor(Math.random() * 100"></script>

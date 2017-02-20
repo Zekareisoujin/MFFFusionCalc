@@ -153,7 +153,7 @@ FusionTable = {
 
 var Calc = function (crossRateTable, fodderRateTable) {
 
-    var fodderCost, cardCost;
+    var fodderCost, fodderFusionTable, cardFusionTable;
 
     // cbf with knapsack, gonna just go with greedy approach
     var fillSlot = function (targetLevel, slot, rate, rateTable, notGreedy) {
@@ -186,8 +186,10 @@ var Calc = function (crossRateTable, fodderRateTable) {
 
     var prepFodder = function (maxLvl, minimumRate) {
         fodderCost = [1];
+        fodderFusionTable = [];
         for (var i = 1; i < maxLvl; i++) {
             var set = fillSlot(i, 5, minimumRate, fodderRateTable);
+            fodderFusionTable.push(set);
             fodderCost[i] = fodderCost[i - 1];
             for (var j = 0; j < set.basket.length; j++) {
                 fodderCost[i] += fodderCost[set.basket[j]];
@@ -196,10 +198,10 @@ var Calc = function (crossRateTable, fodderRateTable) {
     }
 
     var calculateCardCost = function (maxLvl, minimumRate, slotCount, notGreedy) {
-        cardCost = [];
+        cardFusionTable = [];
         for (var i = 1; i < maxLvl; i++) {
             var data = fillSlot(i, slotCount, minimumRate, crossRateTable, notGreedy);
-            cardCost.push(data);
+            cardFusionTable.push(data);
         }
     }
 
@@ -207,7 +209,7 @@ var Calc = function (crossRateTable, fodderRateTable) {
         compute: function (cardLevel, cardRate, fodderLevel, fodderRate, slotCount, notGreedy) {
             prepFodder(fodderLevel, fodderRate);
             calculateCardCost(cardLevel, cardRate, slotCount, notGreedy);
-            return cardCost;
+            return { 'cardCost' : cardFusionTable, 'fodderCost' : fodderFusionTable };
         }
     }
 }
