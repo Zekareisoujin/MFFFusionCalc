@@ -134,5 +134,6 @@ $('#fodder-card-select').on('change', fodderRarityFilter);
 $('#fodder-rarity-select').on('change', calculate);
 $('input:radio').on('change', calculate);
 $('input:checkbox').on('change', calculate);
+$('input[type=number]').on('change', calculate);
 $('#target-card-select').trigger('change');
 // $('#calculate').on('click', calculate);
