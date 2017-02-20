@@ -1,19 +1,20 @@
 const max_slot = 5;
 
 CardOption = {
-    'gacha' : {
-        'rarity' : [3, 4, 5],
-        'fodder' : ['gacha', 'drop'],
+    'gacha': {
+        'rarity': [3, 4, 5],
+        'fodder': ['gacha', 'drop'],
+        'price': { 3: 3, 4: 5, 5: 8 },
     },
 
-    'sicarius' : {
-        'rarity' : [3, 4],
-        'fodder' : ['sicarius'],
+    'sicarius': {
+        'rarity': [3, 4],
+        'fodder': ['sicarius'],
     },
 
-    'drop' : {
-        'rarity' : [1, 2, 3, 4],
-        'fodder' : ['drop'],
+    'drop': {
+        'rarity': [1, 2, 3, 4],
+        'fodder': ['drop'],
     }
 }
 
@@ -150,7 +151,7 @@ FusionTable = {
     },
 }
 
-var Calc = function(crossRateTable, fodderRateTable) {
+var Calc = function (crossRateTable, fodderRateTable) {
 
     var fodderCost, cardCost;
 
@@ -161,7 +162,7 @@ var Calc = function(crossRateTable, fodderRateTable) {
         var cap = Math.min(rateTable[idx].length, fodderCost.length);
         var minBasket = { 'cost': -1, 'basket': [] };
 
-        var start = (notGreedy ? cap-1 : 0);
+        var start = (notGreedy ? cap - 1 : 0);
 
         for (var i = start; i < cap; i++) {
             var rateLeft = rate - rateTable[idx][i];
@@ -203,7 +204,7 @@ var Calc = function(crossRateTable, fodderRateTable) {
     }
 
     return {
-        compute : function(cardLevel, cardRate, fodderLevel, fodderRate, slotCount, notGreedy) {
+        compute: function (cardLevel, cardRate, fodderLevel, fodderRate, slotCount, notGreedy) {
             prepFodder(fodderLevel, fodderRate);
             calculateCardCost(cardLevel, cardRate, slotCount, notGreedy);
             return cardCost;

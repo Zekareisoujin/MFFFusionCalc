@@ -68,6 +68,8 @@ var calculate = function () {
             costStr = ret[i].cost + 'x AL1 cards';
             cummulativeCostStr = total + 'x AL1 cards';
             cummulativeBankCostStr = bankTotal + ' slots';
+            if (fodderCard == 'gacha')
+                cummulativeCostStr += ' - ' + CardOption[fodderCard].price[fodderRarity]*total + ' tickets';
         }else {
             costStr = cummulativeCostStr = cummulativeBankCostStr = 'N/A';
             contentStr = 'Not achievable';
