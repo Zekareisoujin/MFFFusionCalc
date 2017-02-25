@@ -143,6 +143,13 @@ var fodderRarityFilter = function () {
             if (rarity[i] <= targetRarity)
                 actualRarityAllowed.push(rarity[i]);
         }
+
+        // Sicarius warning
+        if (card == 'sicarius' && targetRarity > parseInt(3))
+            $('#sicarius-warning').show();
+        else
+            $('#sicarius-warning').hide();
+
     } else
         actualRarityAllowed = rarity;
 
