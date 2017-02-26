@@ -144,6 +144,12 @@ var fodderRarityFilter = function () {
                 actualRarityAllowed.push(rarity[i]);
         }
 
+        // Boost fusion info
+        if (card == 'gacha' && targetRarity > parseInt(3))
+            $('#boost-fusion').show();
+        else
+            $('#boost-fusion').hide();
+
         // Sicarius warning
         if (card == 'sicarius' && targetRarity > parseInt(3))
             $('#sicarius-warning').show();
