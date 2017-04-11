@@ -6,6 +6,7 @@ var calculate = function () {
     var fodderCard = $('#fodder-card-select').val();
     var fodderRarity = $('#fodder-rarity-select').val();
     var fodderRate = $('#fodder-fusion-rate').val();
+    var minFodderLevel = $('#fodder-minimum-level').val();
     var md = $('#mobius-day').prop('checked') ? 'mobius' : 'standard';
     var mogAmulet = $('#mog-amulet').prop('checked');
     var bankSave = $('#bank-save').prop('checked');
@@ -35,7 +36,7 @@ var calculate = function () {
     var targetRateTable = FusionTable[type][mainTable][md];
     var fodderRateTable = FusionTable[type][fodderTable][md];
     var calc = Calc(targetRateTable, fodderRateTable);
-    var ret = calc.compute(targetLevel, targetRate, fodderLevel, fodderRate, slotCount, bankSave);
+    var ret = calc.compute(targetLevel, targetRate, fodderLevel, fodderRate, slotCount, minFodderLevel, bankSave);
     var cardCost = ret.cardCost;
     var fodderCost = ret.fodderCost;
 
@@ -203,9 +204,10 @@ $('#target-card-select').on('change', cardFilter);
 $('#target-rarity-select').on('change', fodderRarityFilter);
 $('#fodder-card-select').on('change', fodderRarityFilter);
 $('#fodder-rarity-select').on('change', calculate);
-$('input:radio').on('change', calculate);
-$('input:checkbox').on('change', calculate);
-$('input[type=number]').on('change', calculate);
+// $('input:radio').on('change', calculate);
+// $('input:checkbox').on('change', calculate);
+// $('input[type=number]').on('change', calculate);
+$('input').on('change', calculate);
 $('#target-card-select').trigger('change');
 // $('input[value=support]').trigger('change')
 // $('#calculate').on('click', calculate);
