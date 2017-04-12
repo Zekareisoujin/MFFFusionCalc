@@ -2,11 +2,11 @@ var calculate = function () {
     var type = $('input[name=card-type-radio]:checked').val();
     var targetCard = $('#target-card-select').val();
     var targetRarity = $('#target-rarity-select').val();
-    var targetRate = $('#target-fusion-rate').val();
+    var targetRate = parseInt($('#target-fusion-rate').val());
     var fodderCard = $('#fodder-card-select').val();
     var fodderRarity = $('#fodder-rarity-select').val();
-    var fodderRate = $('#fodder-fusion-rate').val();
-    var minFodderLevel = $('#fodder-minimum-level').val();
+    var fodderRate = parseInt($('#fodder-fusion-rate').val());
+    var minFodderLevel = parseInt($('#fodder-minimum-level').val());
     var md = $('#mobius-day').prop('checked') ? 'mobius' : 'standard';
     var mogAmulet = $('#mog-amulet').prop('checked');
     var bankSave = $('#bank-save').prop('checked');
@@ -46,7 +46,7 @@ var calculate = function () {
             var item = basket[j];
             if (basketContent[item] == undefined) {
                 var ctn = {};
-                ctn.rate = tableRate[i][item];
+                ctn.rate = tableRate[item];
                 ctn.count = 1;
                 basketContent[item] = ctn;
             } else
@@ -69,13 +69,13 @@ var calculate = function () {
             total += cardCost[i].cost;
             bankTotal += cardCost[i].basket.length;
 
-            var basketContent = getBasketContent(cardCost[i].basket, targetRateTable)
+            var basketContent = getBasketContent(cardCost[i].basket, targetRateTable[i])
             for (var key in basketContent) {
                 contentStr += basketContent[key].count + ' &times; AL' + (parseInt(key) + 1) + ' (' + basketContent[key].rate + '% each); ';
             }
 
-            costStr = cardCost[i].cost + ' &times; AL1 cards';
-            cummulativeCostStr = total + ' &times; AL1 cards';
+            costStr = cardCost[i].cost + ' &times; AL' + minFodderLevel + ' cards';
+            cummulativeCostStr = total + ' &times; AL' + minFodderLevel + ' cards';
             cummulativeBankCostStr = bankTotal + ' slots';
             if (fodderCard == 'gacha')
                 cummulativeCostStr += ' - ' + CardOption[type][fodderCard].price[fodderRarity] * total + ' tickets';
@@ -104,20 +104,20 @@ var calculate = function () {
         if (fodderCost[i].cost > 0) {
             total += fodderCost[i].cost;
 
-            var basketContent = getBasketContent(fodderCost[i].basket, fodderRateTable)
+            var basketContent = getBasketContent(fodderCost[i].basket, fodderRateTable[i + minFodderLevel - 1])
             for (var key in basketContent) {
                 contentStr += basketContent[key].count + ' &times; AL' + (parseInt(key) + 1) + ' (' + basketContent[key].rate + '% each); ';
             }
 
-            costStr = cardCost[i].cost + ' &times; AL1 cards';
-            cummulativeCostStr = total + ' &times; AL1 cards';
-        }else {
+            costStr = fodderCost[i].cost + ' &times; AL' + minFodderLevel + ' cards';
+            cummulativeCostStr = total + ' &times; AL' + minFodderLevel + ' cards';
+        } else {
             costStr = cummulativeCostStr = 'N/A';
             contentStr = 'Not achievable';
         }
 
         var tr = $('<tr>');
-        tr.append($('<td>').html((i + 1) + ' &rarr; ' + (i + 2)));
+        tr.append($('<td>').html((i + minFodderLevel) + ' &rarr; ' + (i + minFodderLevel + 1)));
         tr.append($('<td>').html(contentStr));
         tr.append($('<td>').html(costStr));
         tr.append($('<td>').html(cummulativeCostStr));
@@ -186,13 +186,13 @@ var cardFilter = function () {
     fodderRarityFilter();
 }
 
-$('input[name=card-type-radio]').on('change', function() {
+$('input[name=card-type-radio]').on('change', function () {
     var type = $('input[name=card-type-radio]:checked').val();
     var cardAllowed = [];
     for (key in CardOption[type])
         cardAllowed.push(key);
 
-    $('#target-card-select option').each(function() {
+    $('#target-card-select option').each(function () {
         filterSelect($(this), cardAllowed);
     });
     $('#target-card-select').val(cardAllowed[0]);
