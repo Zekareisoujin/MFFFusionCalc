@@ -5,7 +5,7 @@ CardOption = {
         'gacha': {
             'rarity': [3, 4, 5],
             'fodderRarity': [3, 4, 5],
-            'fodder': ['gacha', 'drop'],
+            'fodder': ['gacha', 'drop', 'scroll'],
             'price': { 3: 3, 4: 5, 5: 8 },
         },
 
@@ -19,6 +19,12 @@ CardOption = {
             'rarity': [1, 2, 3],
             'fodderRarity': [1, 2, 3],
             'fodder': ['drop'],
+        },
+
+        'scroll': {
+            'rarity': [1, 2, 3],
+            'fodderRarity': [1, 2, 3],
+            'fodder': ['scroll'],
         }
     },
 
@@ -26,7 +32,7 @@ CardOption = {
         'gacha': {
             'rarity': [3, 4, 5],
             'fodderRarity': [3, 4, 5],
-            'fodder': ['gacha', 'drop'],
+            'fodder': ['gacha', 'drop', 'scroll'],
             'price': { 3: 3, 4: 5, 5: 8 },
         },
 
@@ -34,6 +40,12 @@ CardOption = {
             'rarity': [1, 2, 3, 4],
             'fodderRarity': [1, 2, 3, 4],
             'fodder': ['drop'],
+        },
+
+        'scroll': {
+            'rarity': [1, 2, 3, 4],
+            'fodderRarity': [1, 2, 3, 4],
+            'fodder': ['scroll'],
         }
     }
 }
@@ -97,7 +109,7 @@ FusionTable = {
             'standard': [
                 [50, 100],
                 [30, 50, 100],
-                [30, 50, 100],
+                [30, 50, 90],
                 [20, 30, 50, 80, 100],
                 [20, 30, 50, 80, 100]
             ],
